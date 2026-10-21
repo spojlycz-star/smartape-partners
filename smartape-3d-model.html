@@ -1026,65 +1026,110 @@ html>body{padding:0}</style>
 <body>
 <div id="smartape-3d">
   <style>
-    #smartape-3d {color:var(--foreground);}
-    #smartape-3d .st-head {display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;}
-    #smartape-3d .st-stage {position:relative;width:100%;height:440px;}
-    #smartape-3d canvas {display:block;width:100%;height:100%;touch-action:pan-y;cursor:grab;}
-    #smartape-3d canvas:active {cursor:grabbing;}
-    #smartape-3d .st-controls {display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;}
-    #smartape-3d .st-field {min-width:0;}
-    #smartape-3d .st-select {margin-top:14px;}
-    #smartape-3d .st-detail {margin:12px 0;min-height:2.8em;}
-    #smartape-3d .st-bottom {display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;align-items:center;}
-    @media(max-width:460px){#smartape-3d .st-stage{height:370px;}#smartape-3d .st-controls{grid-template-columns:1fr;gap:10px;}}
-
-    :root{color-scheme:dark;--foreground:#e3eee8;--muted-foreground:#9cb0a6;--background:#101916;--border:#4b6558;--muted:#354c40;--viz-series-1:#e8b775;--viz-series-2:#c4ef78;--viz-series-3:#65b9df;--primary:#c4ef78;--primary-foreground:#14200b;--card:#1c2b23;--input:#344c3e;--secondary:#23372c;--secondary-foreground:#deece1}
-    html,body{background:#0b120f!important;color:#e3eee8!important;margin:0}
-    #smartape-3d{max-width:1200px;margin:auto;padding:24px;font-family:system-ui,sans-serif}
-    #smartape-3d h3{font-size:23px;letter-spacing:-.7px}
-    #smartape-3d .st-stage{height:580px;background:radial-gradient(ellipse at 45% 40%,#203629,#0e1712 75%);border:1px solid #304a38;border-radius:20px;margin:22px 0;overflow:hidden}
-    #smartape-3d .st-head{border-bottom:1px solid #294334;padding-bottom:16px}
-    #smartape-3d .st-detail{background:#203127;border-left:3px solid #c4ef78;padding:18px;border-radius:0 10px 10px 0;line-height:1.7;min-height:80px}
-    #smartape-3d .st-controls{gap:20px;padding:15px 0}
-    #smartape-3d .st-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0}
-    #smartape-3d .st-toolbar button{border:1px solid #45604d;background:#1c3023;color:#dcebcf;padding:10px 15px;border-radius:10px;cursor:pointer}
-    #smartape-3d .st-toolbar button:hover{background:#304a32}
-    #smartape-3d .st-toolbar button[aria-pressed=true]{background:#c4ef78;color:#172212}
-    #smartape-3d canvas{touch-action:none}
-    #smartape-3d section{border-top:1px solid #294334;padding-top:20px}
-    #smartape-3d section p{line-height:1.7}
-    @media(max-width:600px){#smartape-3d{padding:12px}#smartape-3d .st-stage{height:460px}#smartape-3d h3{font-size:20px}}
-
-    #smartape-3d .st-stage{height:690px;background:#101916;border-color:#314b3b;margin:14px 0}
-    #smartape-3d .st-detail{font-size:15px;max-width:100%;min-height:0}
-    #smartape-3d .st-head h3{font-size:24px}
-    #smartape-3d .st-controls{border-top:1px solid #304b3c;margin-top:20px}
-    #smartape-3d .st-select{margin:18px 0 8px}
-    @media(max-width:600px){#smartape-3d .st-stage{height:610px}#smartape-3d .st-toolbar span{width:100%;font-size:12px}}
-
-    #smartape-3d .st-legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px;margin:16px 0 24px}
-    #smartape-3d .st-legend button{display:flex;align-items:center;gap:10px;text-align:left;color:#d7e5da;background:#18271e;border:1px solid #344c3e;border-radius:9px;padding:10px 12px;font:inherit;font-size:13px;cursor:pointer}
-    #smartape-3d .st-legend button span{display:grid;place-items:center;flex:none;width:29px;height:29px;border:1px solid #8fa696;border-radius:50%;font-size:12px}
-    #smartape-3d .st-legend button:hover,#smartape-3d .st-legend button[aria-pressed=true]{background:#2b402b;border-color:#c4ef78}
+    :root{color-scheme:dark;--foreground:#e3eee8;--muted-foreground:#91a49a;--background:#0d1511;--border:#334a3c;--muted:#354c40;--viz-series-1:#e8b775;--viz-series-2:#c4ef78;--viz-series-3:#65b9df;--primary:#c4ef78;--primary-foreground:#14200b;--card:#17241d;--input:#344c3e;--secondary:#23372c;--secondary-foreground:#deece1}
+    html,body{background:#0b120f!important;color:#e3eee8!important;margin:0;overflow-x:hidden}
+    #smartape-3d{max-width:1280px;margin:auto;padding:16px;font-family:system-ui,sans-serif;color:var(--foreground)}
+    #smartape-3d .st-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;padding:2px 2px 13px;border-bottom:1px solid #294334}
+    #smartape-3d .st-head h3{font-size:22px;letter-spacing:-.6px;margin:0}
+    #smartape-3d .st-head span{color:#91a49a;text-align:right}
+    #smartape-3d .st-toolbar{display:flex;gap:7px;align-items:center;padding:10px 0}
+    #smartape-3d .st-toolbar button,#smartape-3d .st-bottom button{border:1px solid #45604d;background:#19291f;color:#dcebcf;padding:8px 12px;border-radius:9px;cursor:pointer;font-size:12px}
+    #smartape-3d .st-toolbar button:hover,#smartape-3d .st-bottom button:hover{background:#304a32}
+    #smartape-3d button[aria-pressed=true]{background:#c4ef78!important;color:#172212!important;border-color:#c4ef78!important}
+    #smartape-3d .st-toolbar .st-hint{margin-left:auto;color:#8fa095;font-size:11px}
+    #smartape-3d .st-workspace{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(390px,.9fr);gap:12px;align-items:stretch}
+    #smartape-3d .st-stage{position:relative;width:100%;height:600px;background:radial-gradient(ellipse at 45% 40%,#203629,#0e1712 75%);border:1px solid #314b3b;border-radius:16px;overflow:hidden}
+    #smartape-3d canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+    #smartape-3d canvas:active{cursor:grabbing}
+    #smartape-3d .st-panel{height:600px;display:flex;flex-direction:column;gap:9px;padding:12px;background:#111b16;border:1px solid #2d4436;border-radius:16px}
+    #smartape-3d .st-panel-title{display:flex;justify-content:space-between;align-items:center;color:#c4ef78;font-size:11px;letter-spacing:1.2px;text-transform:uppercase}
+    #smartape-3d .st-panel-title span:last-child{color:#71877a;letter-spacing:0;text-transform:none}
+    #smartape-3d .st-legend{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+    #smartape-3d .st-legend button{display:grid;grid-template-columns:29px 1fr;grid-template-rows:auto auto;column-gap:8px;text-align:left;color:#d7e5da;background:#18271e;border:1px solid #30473a;border-radius:9px;padding:7px 8px;font:inherit;cursor:pointer;min-height:58px}
+    #smartape-3d .st-legend button>span{grid-row:1/3;align-self:center;display:grid;place-items:center;width:27px;height:27px;border:1px solid #809688;border-radius:50%;font-size:11px;color:#eef8ee}
+    #smartape-3d .st-legend strong{font-size:11px;line-height:1.2;font-weight:650}
+    #smartape-3d .st-legend small{font-size:9px;line-height:1.25;color:#8fa095;margin-top:2px}
+    #smartape-3d .st-legend button:hover,#smartape-3d .st-legend button[aria-pressed=true]{background:#293f2e;border-color:#c4ef78}
+    #smartape-3d .st-controls{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;padding-top:4px;border-top:1px solid #2b4034}
+    #smartape-3d .st-field{min-width:0}
+    #smartape-3d .st-field .form-label{font-size:10px;margin-bottom:0}
+    #smartape-3d .st-field .form-range{height:25px;margin:0}
+    #smartape-3d .st-select{margin:0}
+    #smartape-3d .st-select .form-label{font-size:10px;margin-bottom:4px}
+    #smartape-3d .st-select .form-select{min-height:32px;padding:5px 30px 5px 9px;font-size:11px}
+    #smartape-3d .st-detail{background:#1b2c22;border-left:3px solid #c4ef78;padding:9px 11px;border-radius:0 8px 8px 0;font-size:10px;line-height:1.45;min-height:55px;color:#b7c7bc}
+    #smartape-3d .st-bottom{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:9px 2px 0}
+    #smartape-3d .st-bottom .viz-row{display:flex;gap:6px}
+    #smartape-3d .st-liner-toggle{display:flex;align-items:center;gap:7px;color:#9eb0a4;font-size:10px}
+    #smartape-3d .st-footnote{margin:8px 2px 0;color:#6f8276;font-size:9px;line-height:1.4}
+    @media(max-width:900px){
+      #smartape-3d .st-workspace{grid-template-columns:1fr}
+      #smartape-3d .st-stage{height:430px}
+      #smartape-3d .st-panel{height:auto}
+      #smartape-3d .st-legend{grid-template-columns:repeat(3,1fr)}
+    }
+    @media(max-width:600px){
+      #smartape-3d{padding:10px}
+      #smartape-3d .st-head{align-items:flex-start;flex-direction:column;gap:3px}
+      #smartape-3d .st-head h3{font-size:18px}
+      #smartape-3d .st-head span{text-align:left;font-size:10px}
+      #smartape-3d .st-toolbar{display:grid;grid-template-columns:1fr 1fr}
+      #smartape-3d .st-toolbar .st-hint{display:none}
+      #smartape-3d .st-stage{height:340px}
+      #smartape-3d .st-legend{grid-template-columns:1fr 1fr}
+      #smartape-3d .st-legend button{min-height:64px}
+      #smartape-3d .st-controls{grid-template-columns:1fr}
+      #smartape-3d .st-bottom{align-items:flex-start;flex-direction:column}
+    }
   </style>
-  <div class="st-head"><h3>Smartape · uhlíkový senzor + pasivní UHF RFID</h3><span class="text-small">Skladba od vrchního krytu po lepidlo · bez baterie, s čipem</span></div>
-  <div class="st-toolbar"><button id="st-assembled" type="button">Složená páska</button><button id="st-exploded" type="button">Všechny vrstvy</button><button id="st-electronics" type="button" aria-pressed="false">Jen elektronika</button><button id="st-reset" type="button">Výchozí pohled</button><span class="text-small">Klikni na značku nebo položku legendy · tažením otáčej</span></div><div class="st-stage"><canvas role="img" aria-label="Rozložený 3D model osmi vrstev pásky, uhlíkového senzoru, dipólové UHF antény, RFID čipu, kondenzátoru a elektrických propojení">Trojrozměrný model pasivní pásky Smartape. Součásti lze vybírat v seznamu pod modelem.</canvas></div>
-<div class="st-legend" aria-label="Legenda součástí"><button type="button" data-layer-note="coat" aria-pressed="false"><span>1</span>Vrchní ochranný tape</button><button type="button" data-layer-note="chip" aria-pressed="false"><span>IC</span>RFID senzorový čip</button><button type="button" data-layer-note="capacitor" aria-pressed="false"><span>C</span>Zásobní kondenzátor</button><button type="button" data-layer-note="island" aria-pressed="false"><span>2</span>Zpevněný elektronický ostrůvek</button><button type="button" data-layer-note="antenna" aria-pressed="false"><span>3</span>UHF RFID anténa a přizpůsobení</button><button type="button" data-layer-note="dielectric" aria-pressed="false"><span>4</span>Izolační mezivrstva</button><button type="button" data-layer-note="sensor" aria-pressed="false"><span>5</span>Uhlíkový tenzometr</button><button type="button" data-layer-note="reference" aria-pressed="false"><span>P</span>Přívody a propojení</button><button type="button" data-layer-note="tpu" aria-pressed="false"><span>6</span>Pružný substrát</button><button type="button" data-layer-note="adhesive" aria-pressed="false"><span>7</span>Spodní lepivá plocha</button><button type="button" data-layer-note="liner" aria-pressed="false"><span>8</span>Odlepovací podložka</button></div>
-  <div class="st-controls">
-    <div class="st-field"><label class="form-label" for="st-explode">Rozložení vrstev <output id="st-explode-out" class="tabular-nums">85 %</output></label><input id="st-explode" class="form-range" type="range" min="0" max="100" value="85"/></div>
-    <div class="st-field"><label class="form-label" for="st-bend">Ohyb přes kloub <output id="st-bend-out" class="tabular-nums">0°</output></label><input id="st-bend" class="form-range" type="range" min="0" max="120" value="0" step="5"/></div>
+  <div class="st-head"><h3>Smartape · pasivní senzorová páska</h3><span>Bez baterie · uhlíkový senzor · UHF RFID</span></div>
+  <div class="st-toolbar"><button id="st-assembled" type="button">Složená páska</button><button id="st-exploded" type="button">Rozložit vrstvy</button><button id="st-electronics" type="button" aria-pressed="false">Elektronika</button><button id="st-reset" type="button">Výchozí pohled</button><span class="st-hint">Tažením otáčejte · kliknutím vyberte část</span></div>
+  <div class="st-workspace">
+    <div class="st-stage"><canvas role="img" aria-label="Rozložený 3D model osmi vrstev pásky, uhlíkového senzoru, UHF antény, RFID čipu, kondenzátoru a elektrických propojení">Trojrozměrný model pasivní pásky Smartape.</canvas></div>
+    <aside class="st-panel" aria-label="Vysvětlivky částí modelu">
+      <div class="st-panel-title"><span>Části a jejich funkce</span><span>Kliknutím zvýrazníte</span></div>
+      <div class="st-legend" aria-label="Legenda součástí">
+        <button type="button" data-layer-note="coat" aria-pressed="false"><span>1</span><strong>Vrchní kryt</strong><small>Chrání elektroniku před potem a oděrem.</small></button>
+        <button type="button" data-layer-note="chip" aria-pressed="false"><span>IC</span><strong>RFID senzorový čip</strong><small>Napájí měření a odesílá hodnotu odporu.</small></button>
+        <button type="button" data-layer-note="capacitor" aria-pressed="false"><span>C</span><strong>Kondenzátor</strong><small>Krátkodobě vyrovnává energii z antény.</small></button>
+        <button type="button" data-layer-note="island" aria-pressed="false"><span>2</span><strong>Pevný ostrůvek</strong><small>Chrání čip před ohybem a natažením.</small></button>
+        <button type="button" data-layer-note="antenna" aria-pressed="false"><span>3</span><strong>UHF anténa</strong><small>Přijímá energii a vrací data do hubu.</small></button>
+        <button type="button" data-layer-note="dielectric" aria-pressed="false"><span>4</span><strong>Izolační vrstva</strong><small>Odděluje anténu od senzoru.</small></button>
+        <button type="button" data-layer-note="sensor" aria-pressed="false"><span>5</span><strong>Uhlíkový tenzometr</strong><small>Při ohybu mění svůj elektrický odpor.</small></button>
+        <button type="button" data-layer-note="reference" aria-pressed="false"><span>P</span><strong>Vodivé přívody</strong><small>Vedou signál senzoru do měřicího čipu.</small></button>
+        <button type="button" data-layer-note="tpu" aria-pressed="false"><span>6</span><strong>Pružný substrát</strong><small>Nese vrstvy a kopíruje pohyb kloubu.</small></button>
+        <button type="button" data-layer-note="adhesive" aria-pressed="false"><span>7</span><strong>Lepidlo na kůži</strong><small>Fixuje pásku a přenáší pohyb těla.</small></button>
+        <button type="button" data-layer-note="liner" aria-pressed="false"><span>8</span><strong>Ochranná podložka</strong><small>Chrání lepidlo do okamžiku aplikace.</small></button>
+      </div>
+      <div class="st-controls">
+        <div class="st-field"><label class="form-label" for="st-explode">Rozložení <output id="st-explode-out" class="tabular-nums">85 %</output></label><input id="st-explode" class="form-range" type="range" min="0" max="100" value="85"/></div>
+        <div class="st-field"><label class="form-label" for="st-bend">Ohyb kloubu <output id="st-bend-out" class="tabular-nums">0°</output></label><input id="st-bend" class="form-range" type="range" min="0" max="120" value="0" step="5"/></div>
+      </div>
+      <div class="st-select"><label class="form-label" for="st-part">Samostatná část</label><select id="st-part" class="form-select"><option value="all">Celá páska · všechny součásti</option><option value="coat">1 · Vrchní kryt</option><option value="chip">IC · RFID senzorový čip</option><option value="capacitor">C · Kondenzátor</option><option value="island">2 · Zpevněný ostrůvek</option><option value="antenna">3 · UHF anténa</option><option value="dielectric">4 · Izolační vrstva</option><option value="sensor">5 · Uhlíkový tenzometr</option><option value="reference">P · Vodivé přívody</option><option value="tpu">6 · Pružný substrát</option><option value="adhesive">7 · Lepidlo na kůži</option><option value="liner">8 · Ochranná podložka</option></select></div>
+      <div id="st-detail" class="st-detail" aria-live="polite">Čísla v modelu odpovídají legendě. Vyberte část a model ji zobrazí samostatně včetně její funkce.</div>
+    </aside>
   </div>
-  <div class="st-select"><label class="form-label" for="st-part">Prohlédnout samostatnou součást</label><select id="st-part" class="form-select"><option value="all">Celá páska · všechny součásti</option><option value="coat">1 · Vrchní ochranný tape</option><option value="chip">IC · RFID senzorový čip</option><option value="capacitor">C · Zásobní kondenzátor</option><option value="island">2 · Zpevněný elektronický ostrůvek</option><option value="antenna">3 · UHF RFID anténa a přizpůsobení</option><option value="dielectric">4 · Izolační mezivrstva</option><option value="sensor">5 · Uhlíkový tenzometr</option><option value="reference">P · Přívody a propojení</option><option value="tpu">6 · Pružný substrát</option><option value="adhesive">7 · Spodní lepivá plocha</option><option value="liner">8 · Odlepovací podložka</option></select></div>
-  <div id="st-detail" class="st-detail text-small" aria-live="polite">Přehled ukazuje pořadí vrstev. Klikni na značku v modelu nebo na položku legendy níže: zobrazí se samostatně, bez překrývání. Čip a kondenzátor najdeš v pohledu „Jen elektronika“.</div>
-  <div class="st-bottom"><div class="viz-row"><button type="button" class="btn" id="st-oblique" aria-pressed="true">Šikmý pohled</button><button type="button" class="btn" id="st-top" aria-pressed="false">Shora</button><button type="button" class="btn" id="st-side" aria-pressed="false">Z boku</button></div><span class="text-small">Otáčení tažením</span></div>
-  <p class="text-small">Koncepce 120 × 40 mm · textury, vzor lepidla a odlepovací růžek jsou ilustrativní · tloušťky zvětšené · materiály neověřené</p>
-<details style="margin-top:28px"><summary style="cursor:pointer;padding:16px;border-top:1px solid #45604d">Jak funguje RFID a podrobný popis všech součástí</summary><section aria-label="Vysvětlivky vrstev" style="margin-top:10px"><h3>Jak proudí energie a informace</h3><p><strong>Energie:</strong> hub → UHF anténa → usměrňovač / regulátor uvnitř IC → měřicí obvod + kondenzátor.</p><p><strong>Měření:</strong> uhlíkový odpor → buzení a analogové rozhraní (AFE) → ADC uvnitř IC → RFID logika → změna zátěže antény → odezva do hubu.</p><p>Čip neposílá vlastní rádiovou nosnou: moduluje odraz signálu čtečky. V modelu je UHF dipól pro vývoj metrového cíle, nikoli blízkopolní NFC cívka. Bez dostatečné energie ze čtečky není zaručeno měření ani přenos.</p><label class="form-check"><input id="st-liner" type="checkbox" class="form-check-input" checked><span class="form-check-label">Zobrazit odlepovací podložku před použitím</span></label><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:18px"><div><button type="button" class="btn" data-layer-note="coat" aria-pressed="false">1 · Vrchní ochranný tape</button><p class="text-small">Pružný vrchní kryt chrání dráhy a elektroniku. Textilní textura je ilustrativní možnost vzhledu, nikoli potvrzený materiál ani vodotěsná vrstva. V oblasti čipu má lokální kapsu; čip a kondenzátor nelze natahovat. Voděodolnost vyžaduje utěsnění a test.</p></div><div><button type="button" class="btn" data-layer-note="chip" aria-pressed="false">IC · RFID senzorový čip</button><p class="text-small">Funkční bloky: usměrňovač RF energie a regulátor → napájení měřicího rozhraní; buzení odporového senzoru → analogový vstup (AFE) → ADC → digitální hodnota → RFID logika a modulátor zpětného rozptylu. Nemá baterii. Konkrétní čip, odporový rozsah a pasivní měření zatím nejsou vybrané a ověřené.</p></div><div><button type="button" class="btn" data-layer-note="capacitor" aria-pressed="false">C · Zásobní kondenzátor</button><p class="text-small">Malý externí kondenzátor vyrovnává krátké odběry energie získané z antény. Nenahrazuje baterii; bez dostatečného pole čtečky měření neprobíhá. Hodnota a potřeba součástky závisí na čipu.</p></div><div><button type="button" class="btn" data-layer-note="island" aria-pressed="false">2 · Zpevněný elektronický ostrůvek</button><p class="text-small">Lokální nosič čipu, kondenzátoru a spojů u kotvy pásky, mimo hlavní natahovanou zónu. Izoluje pevné součástky od tahu. Jde o samostatnou mechanickou část, nikoli roztažitelný čip.</p></div><div><button type="button" class="btn" data-layer-note="antenna" aria-pressed="false">3 · UHF RFID anténa a přizpůsobení</button><p class="text-small">Dvě ramena antény jsou připojena k RF vstupům čipu. Anténa přijímá energii z hubu a vrací modulovanou odezvu změnou odrazu (backscatter). Zobrazen je schematický dipól, nikoli NFC cívka. Rozměry, impedanční přizpůsobení a fungování na těle vyžadují RF návrh; dosah 1 m není potvrzen.</p></div><div><button type="button" class="btn" data-layer-note="dielectric" aria-pressed="false">4 · Izolační mezivrstva</button><p class="text-small">Odděluje anténní dráhy od uhlíkového senzoru a zajišťuje elektrickou izolaci v místech křížení. Průchody pro připojení senzoru se navrhnou výrobně. Tloušťka a vliv na anténu nejsou určené.</p></div><div><button type="button" class="btn" data-layer-note="sensor" aria-pressed="false">5 · Uhlíkový tenzometr</button><p class="text-small">Souvislá dráha z uhlíkového inkoustu v pružném pojivu. Při deformaci mění odpor, který čip změří přes dva přívody. Převod na úhel vyžaduje kalibraci; odporový rozsah, hystereze a vliv teploty se musí změřit.</p></div><div><button type="button" class="btn" data-layer-note="reference" aria-pressed="false">P · Přívody a propojení</button><p class="text-small">Dva přívody propojují konce tenzometru s měřicím vstupem a návratem čipu. Model ukazuje také průchod mezi vrstvami. Je to funkční schéma, nikoli konkrétní pinout: zapojení buzení a případného referenčního odporu závisí na vybraném čipu.</p></div><div><button type="button" class="btn" data-layer-note="tpu" aria-pressed="false">6 · Pružný substrát</button><p class="text-small">TPU nebo jiný elastomer nese senzor a přenáší deformaci kloubu. Anténní zóna a kotva musí být navrženy tak, aby tah nerozladil anténu a nepoškodil spoje.</p></div><div><button type="button" class="btn" data-layer-note="adhesive" aria-pressed="false">7 · Spodní lepivá plocha</button><p class="text-small">Jednorázové lepidlo určené pro kontakt s kůží drží pásku po dobu tréninku. Přenos pohybu, přilnavost za potu a snášenlivost s kůží vyžadují ověření.</p></div><div><button type="button" class="btn" data-layer-note="liner" aria-pressed="false">8 · Odlepovací podložka</button><p class="text-small">Chrání spodní lepidlo před použitím. Před nalepením se odstraní; nezůstává mezi kůží a senzorem.</p></div></div><p><strong>Koncepční zapojení, nikoli hotový RF návrh ani výrobní dokumentace.</strong> Čip a jeho bloky jsou zvětšené pro čitelnost. EMC, bezpečnost na kůži, přesnost, rychlost měření, dosah a cena 5–10 Kč nejsou ověřené. AMC ani kovový štít zde nejsou navrženy; nelze je přidat bez nového ladění antény.</p><p class="text-small">Technický příklad architektury: <a href="https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/1881/SL900A_Datasheet_v5.pdf" target="_blank" rel="noopener">datasheet ams SL900A</a> (RF napájení, senzorové rozhraní a ADC). Nejde o závazně vybraný nebo cenově ověřený čip.</p></section></details>
+  <div class="st-bottom"><div class="viz-row"><button type="button" class="btn" id="st-oblique" aria-pressed="true">Šikmo</button><button type="button" class="btn" id="st-top" aria-pressed="false">Shora</button><button type="button" class="btn" id="st-side" aria-pressed="false">Z boku</button></div><label class="st-liner-toggle"><input id="st-liner" type="checkbox" checked> Zobrazit ochrannou podložku</label></div>
+  <p class="st-footnote">Koncepční vizualizace 120 × 40 mm. Tloušťky jsou zvětšené pro čitelnost; materiály, RF parametry a výrobní provedení budou ověřeny prototypem.</p>
   <script>
   (()=>{
     const root=document.getElementById('smartape-3d');
     const canvas=root.querySelector('canvas'),ctx=canvas.getContext('2d');
     const ex=root.querySelector('#st-explode'),be=root.querySelector('#st-bend'),part=root.querySelector('#st-part');
-    const descriptions={"all": "Kompletní pasivní UHF koncepce s čipem. Čísla 1–8 označují vrstvy od povrchu ke kůži a odlepovací podložku.", "coat": "1 · Vrchní ochranný tape — Pružný vrchní kryt chrání dráhy a elektroniku. Textilní textura je ilustrativní možnost vzhledu, nikoli potvrzený materiál ani vodotěsná vrstva. V oblasti čipu má lokální kapsu; čip a kondenzátor nelze natahovat. Voděodolnost vyžaduje utěsnění a test.", "chip": "IC · RFID senzorový čip — Funkční bloky: usměrňovač RF energie a regulátor → napájení měřicího rozhraní; buzení odporového senzoru → analogový vstup (AFE) → ADC → digitální hodnota → RFID logika a modulátor zpětného rozptylu. Nemá baterii. Konkrétní čip, odporový rozsah a pasivní měření zatím nejsou vybrané a ověřené.", "capacitor": "C · Zásobní kondenzátor — Malý externí kondenzátor vyrovnává krátké odběry energie získané z antény. Nenahrazuje baterii; bez dostatečného pole čtečky měření neprobíhá. Hodnota a potřeba součástky závisí na čipu.", "island": "2 · Zpevněný elektronický ostrůvek — Lokální nosič čipu, kondenzátoru a spojů u kotvy pásky, mimo hlavní natahovanou zónu. Izoluje pevné součástky od tahu. Jde o samostatnou mechanickou část, nikoli roztažitelný čip.", "antenna": "3 · UHF RFID anténa a přizpůsobení — Dvě ramena antény jsou připojena k RF vstupům čipu. Anténa přijímá energii z hubu a vrací modulovanou odezvu změnou odrazu (backscatter). Zobrazen je schematický dipól, nikoli NFC cívka. Rozměry, impedanční přizpůsobení a fungování na těle vyžadují RF návrh; dosah 1 m není potvrzen.", "dielectric": "4 · Izolační mezivrstva — Odděluje anténní dráhy od uhlíkového senzoru a zajišťuje elektrickou izolaci v místech křížení. Průchody pro připojení senzoru se navrhnou výrobně. Tloušťka a vliv na anténu nejsou určené.", "sensor": "5 · Uhlíkový tenzometr — Souvislá dráha z uhlíkového inkoustu v pružném pojivu. Při deformaci mění odpor, který čip změří přes dva přívody. Převod na úhel vyžaduje kalibraci; odporový rozsah, hystereze a vliv teploty se musí změřit.", "reference": "P · Přívody a propojení — Dva přívody propojují konce tenzometru s měřicím vstupem a návratem čipu. Model ukazuje také průchod mezi vrstvami. Je to funkční schéma, nikoli konkrétní pinout: zapojení buzení a případného referenčního odporu závisí na vybraném čipu.", "tpu": "6 · Pružný substrát — TPU nebo jiný elastomer nese senzor a přenáší deformaci kloubu. Anténní zóna a kotva musí být navrženy tak, aby tah nerozladil anténu a nepoškodil spoje.", "adhesive": "7 · Spodní lepivá plocha — Jednorázové lepidlo určené pro kontakt s kůží drží pásku po dobu tréninku. Přenos pohybu, přilnavost za potu a snášenlivost s kůží vyžadují ověření.", "liner": "8 · Odlepovací podložka — Chrání spodní lepidlo před použitím. Před nalepením se odstraní; nezůstává mezi kůží a senzorem."};
+    const descriptions={
+      all: "Celá skladba pasivní pásky: pružný senzor mění odpor, RFID čip jej změří a UHF anténa přijme energii i odešle data do hubu.",
+      coat: "1 · Vrchní kryt — chrání citlivé dráhy a elektroniku před potem, oděrem a běžným mechanickým namáháním.",
+      chip: "IC · RFID senzorový čip — získá energii z antény, změří odpor tenzometru a zakóduje výsledek do bezdrátové odpovědi.",
+      capacitor: "C · Kondenzátor — vyrovnává krátké špičky spotřeby. Energii pouze dočasně podrží; není to baterie.",
+      island: "2 · Zpevněný ostrůvek — nese pevný čip a kondenzátor mimo hlavní ohybovou zónu a chrání jejich spoje.",
+      antenna: "3 · UHF anténa — přijímá RF energii z hubu a stejnou cestou vrací naměřená data pomocí zpětného rozptylu.",
+      dielectric: "4 · Izolační vrstva — elektricky odděluje anténní dráhy od uhlíkového senzoru a brání zkratům.",
+      sensor: "5 · Uhlíkový tenzometr — při ohnutí nebo natažení mění odpor. Po kalibraci lze změnu převést na průběh pohybu.",
+      reference: "P · Vodivé přívody — propojují oba konce tenzometru s měřicím vstupem RFID čipu.",
+      tpu: "6 · Pružný substrát — drží celou skladbu pohromadě, kopíruje kloub a přenáší jeho deformaci do senzoru.",
+      adhesive: "7 · Lepidlo na kůži — drží pásku na místě a zajišťuje, aby senzor věrně sledoval pohyb povrchu těla.",
+      liner: "8 · Ochranná podložka — chrání lepidlo při skladování a před nalepením se odstraní."
+    };
     let width=736,height=660,yaw=-0.12,tilt=0.35,explosion=.85,bend=0,selected='all',palette={},faces=[],strokes=[],anchors=[];
     let activePointer=null,lastX=0,lastY=0,frame=0,dragDistance=0,badgeHits=[],electronicsOnly=false;
     const cssColor=(token)=>{const el=document.createElement('span');el.style.color=`var(${token})`;root.appendChild(el);const color=getComputedStyle(el).color;el.remove();return color;};
@@ -1233,7 +1278,7 @@ html>body{padding:0}</style>
     const noteButtons=root.querySelectorAll('[data-layer-note]');
     function syncNotes(){noteButtons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.layerNote===part.value)));}
     part.addEventListener('change',syncNotes);
-    noteButtons.forEach(b=>b.addEventListener('click',()=>{part.value=b.dataset.layerNote;part.dispatchEvent(new Event('change'));canvas.scrollIntoView({behavior:'auto',block:'center'});}));
+    noteButtons.forEach(b=>b.addEventListener('click',()=>{part.value=b.dataset.layerNote;part.dispatchEvent(new Event('change'));}));
     root.querySelector('#st-liner').addEventListener('change',request);
     const cameraButtons=['st-oblique','st-top','st-side'];
     const setCamera=(id,y,t)=>{yaw=y;tilt=t;cameraButtons.forEach(b=>root.querySelector('#'+b).setAttribute('aria-pressed',String(b===id)));request();};
@@ -1254,6 +1299,8 @@ html>body{padding:0}</style>
     new MutationObserver(theme).observe(document.documentElement,{attributes:true,attributeFilter:['class','style','data-theme']});
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',theme);
     colors();resize();
+    const reportHeight=()=>{if(window.parent!==window)window.parent.postMessage({type:'smartape-model-height',height:Math.ceil(root.getBoundingClientRect().height)},location.origin);};
+    new ResizeObserver(reportHeight).observe(root);window.addEventListener('load',reportHeight);reportHeight();
   })();
   </script>
 </div>

@@ -1,0 +1,1612 @@
+<!doctype html>
+<html lang="cs" data-visualize-standalone>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Smartape – 3D model pásky</title>
+<style>:root {
+  color-scheme: light dark;
+  background-color: var(
+    --background,
+    var(--color-background-primary, light-dark(rgb(255 255 255), rgb(24 24 24)))
+  ) !important;
+
+  /* Agent-facing contract; keep in sync with SKILL.md. */
+  --background: var(
+    --color-background-primary,
+    light-dark(rgb(255 255 255), rgb(24 24 24))
+  );
+  --foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --card: color-mix(in oklab, var(--foreground) 5%, var(--background));
+  --card-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --popover: var(
+    --color-background-secondary,
+    light-dark(rgb(255 255 255), rgb(45 45 45))
+  );
+  --popover-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --primary: var(
+    --color-text-info,
+    light-dark(rgb(51 156 255), rgb(131 195 255))
+  );
+  --primary-foreground: var(
+    --color-text-inverse,
+    light-dark(rgb(255 255 255), rgb(13 13 13))
+  );
+  --secondary: var(
+    --color-background-secondary,
+    light-dark(rgb(255 255 255 / 96%), rgb(54 54 54 / 96%))
+  );
+  --secondary-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --muted: color-mix(in srgb, var(--foreground) 10%, transparent);
+  --muted-foreground: var(
+    --color-text-secondary,
+    light-dark(rgb(26 28 31 / 49.4%), rgb(255 255 255 / 49.8%))
+  );
+  --accent: var(
+    --color-background-info,
+    light-dark(rgb(229 242 255), rgb(13 39 63))
+  );
+  --accent-foreground: var(
+    --color-text-info,
+    light-dark(rgb(51 156 255), rgb(131 195 255))
+  );
+  --destructive: var(
+    --color-text-warning,
+    light-dark(rgb(226 85 7), rgb(255 133 73))
+  );
+  --border: var(
+    --color-border-secondary,
+    light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%))
+  );
+  --input: var(
+    --color-border-primary,
+    light-dark(
+      rgb(26 28 31 / 11.8%),
+      color-mix(in oklab, rgb(0 0 0) 10%, transparent)
+    )
+  );
+  --ring: var(
+    --color-ring-primary,
+    light-dark(rgb(51 156 255), rgb(131 195 255 / 76%))
+  );
+  --font-size-base: var(--font-text-md-size, 14px);
+  --blue: light-dark(rgb(51 156 255), rgb(51 156 255));
+  --orange: light-dark(rgb(226 85 7), rgb(251 106 34));
+  --green: light-dark(rgb(0 162 64), rgb(64 201 119));
+  --red: light-dark(rgb(224 46 42), rgb(255 103 100));
+  --purple: light-dark(rgb(146 79 247), rgb(173 123 249));
+  --yellow: light-dark(rgb(255 195 0), rgb(255 210 64));
+  --viz-series-1: var(--primary);
+  --viz-series-2: light-dark(rgb(243 136 59), rgb(245 154 86));
+  --viz-series-3: light-dark(rgb(93 201 119), rgb(116 213 139));
+  --viz-series-4: light-dark(rgb(235 119 177), rgb(240 143 192));
+  --viz-series-5: light-dark(rgb(155 121 236), rgb(170 145 239));
+  --viz-series-6: light-dark(rgb(58 185 177), rgb(90 203 194));
+
+  /* Internal implementation variables; not part of the agent contract. */
+  --font-sans: -apple-system, system-ui, "Segoe UI", sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono",
+    monospace;
+  --font-size-normal: max(11px, var(--font-size-base));
+  --font-size-tooltip: calc(var(--font-size-base) - 1px);
+  --font-size-small: max(11px, calc(var(--font-size-base) - 2px));
+  --font-size-h1: calc(var(--font-size-normal) * 1.7142857143);
+  --font-size-h2: calc(var(--font-size-normal) * 1.4285714286);
+  --font-size-h3: calc(var(--font-size-normal) * 1.2857142857);
+  --font-weight-normal: 430;
+  --font-weight-medium: 500;
+  --icon-size: 16px;
+  --line-height-normal: calc(var(--font-size-normal) * 1.5);
+  --line-height-tooltip: calc(var(--font-size-tooltip) * 1.4285714286);
+  --line-height-small: calc(var(--font-size-small) + 4px);
+  --corner-shape: round;
+  --radius: var(--border-radius-lg, 10px);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-2xl: calc(var(--radius) * 1.6);
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 2px -1px rgb(0 0 0 / 8%);
+  --checkmark-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 17 17'%3E%3Cpath d='M12.8961 3.64101C13.1297 3.41418 13.4984 3.37523 13.7779 3.56581C14.0571 3.75635 14.1554 4.11331 14.0299 4.41347L13.9615 4.53847L7.71151 13.7045C7.59411 13.8767 7.4063 13.9877 7.19881 14.0072C6.99136 14.0267 6.78564 13.9533 6.63826 13.806L2.88826 10.056L2.79842 9.9457C2.6192 9.67407 2.64927 9.30496 2.88826 9.06581C3.12738 8.82669 3.49647 8.79676 3.76815 8.97597L3.8785 9.06581L7.03084 12.2182L12.8053 3.74941L12.8961 3.64101Z'/%3E%3C/svg%3E");
+
+  /* Legacy aliases; not part of the current agent contract. */
+  --viz-bg: transparent;
+  --viz-panel: var(--card);
+  --viz-border: var(--border);
+  --viz-text: var(--foreground);
+  --viz-muted: var(--muted-foreground);
+  --viz-accent: var(--primary);
+  --viz-accent-text: var(--primary-foreground);
+  --viz-accent-bg: var(--accent);
+  --viz-font-size: var(--font-size-base);
+  --viz-warning: var(--destructive);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html > body {
+  /* Preserve MCP aliases for older inline renderers without creating :root cycles. */
+  --color-background-primary: var(
+    --background,
+    light-dark(rgb(255 255 255), rgb(24 24 24))
+  );
+  --color-text-primary: var(
+    --foreground,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --color-border-secondary: var(
+    --border,
+    light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%))
+  );
+
+  margin: 0;
+  padding: var(--visualize-paint-gutter, 0px);
+  color: var(--foreground);
+  background: transparent !important;
+  font-family: var(--font-sans) !important;
+  font-size: var(--font-size-normal);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+}
+
+a {
+  color: color-mix(in srgb, var(--viz-accent) 80%, var(--viz-text) 20%);
+  cursor: pointer;
+  font-weight: var(--font-weight-medium, 500);
+  text-decoration: none;
+  text-underline-offset: 2px;
+}
+
+a:is(:hover, :focus-visible) {
+  text-decoration-line: underline;
+  text-decoration-style: dashed;
+  text-decoration-thickness: 0.5px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin-block: 0;
+}
+
+h1 {
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h2 {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h3,
+h4,
+h5,
+h6 {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.3;
+}
+
+b,
+strong,
+th {
+  font-weight: var(--font-weight-medium);
+}
+
+code:not(pre code) {
+  display: inline;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  corner-shape: var(--corner-shape);
+  background: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  overflow-wrap: anywhere;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  word-break: break-word;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+}
+
+.table :is(th, td) {
+  padding-block: 10px;
+  padding-inline: 0 24px;
+  overflow-wrap: anywhere;
+  border-bottom: 1px solid var(--border);
+  text-align: start;
+  vertical-align: top;
+}
+
+.table-responsive > .table :is(th, td) {
+  overflow-wrap: break-word;
+}
+
+.table :is(th, td):last-child {
+  padding-inline-end: 0;
+}
+
+.table :is(caption, thead th) {
+  font-weight: 600;
+}
+
+.table thead th {
+  padding-block: 8px;
+  border-bottom-color: color-mix(in srgb, var(--foreground) 16%, transparent);
+}
+
+.table tbody tr:last-child :is(th, td) {
+  border-bottom: 0;
+}
+
+.table.table-sm :is(th, td) {
+  padding-block: 6px;
+}
+
+.table.table-sm :is(th, td):not(:last-child) {
+  padding-inline-end: 16px;
+}
+
+.table :is(.text-end, [align="right"]) {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.table :is(.text-center, [align="center"]) {
+  text-align: center;
+}
+
+.table .text-nowrap {
+  white-space: nowrap;
+}
+
+#widget {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 0;
+  background: transparent !important;
+}
+
+.card {
+  min-width: 0;
+  padding: 12px;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  border-radius: var(--radius-2xl);
+  corner-shape: var(--corner-shape);
+  color: var(--card-foreground);
+  background: var(--card);
+}
+
+#widget > :not(.card, .progress) {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.tooltip {
+  position: fixed;
+  z-index: 50;
+  top: 0;
+  left: 0;
+  width: max-content;
+  max-width: min(
+    20rem,
+    var(--tooltip-available-width, calc(100vw - 10px)),
+    calc(100vw - 10px)
+  );
+  max-height: min(
+    var(--tooltip-available-height, calc(100vh - 10px)),
+    calc(100vh - 10px)
+  );
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  color: var(--popover-foreground);
+  background: var(--popover);
+  box-shadow: none;
+  font-size: var(--font-size-tooltip);
+  line-height: var(--line-height-tooltip);
+  overflow-wrap: break-word;
+  white-space: normal;
+  pointer-events: none;
+  user-select: none;
+}
+
+.viz-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(max(180px, 24%), 1fr));
+  gap: 10px;
+}
+
+.viz-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.viz-stat-value {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+.viz-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+hr {
+  width: 100%;
+  height: 1px;
+  margin-block: 6px;
+  border: 0;
+  background: var(--border);
+}
+
+.nav {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 4px;
+}
+
+.progress {
+  display: flex;
+  height: 8px;
+  margin-block: calc((var(--line-height-normal, 1.5em) - 8px) / 2);
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+}
+
+.progress-bar:only-child {
+  border-radius: var(--radius-full);
+}
+
+.progress-bar {
+  height: 100%;
+  flex-shrink: 0;
+  border: 0;
+  background: var(--viz-series-1);
+}
+
+.viz-badge {
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  color: var(--accent-foreground);
+  background: var(--accent);
+  font-weight: var(--font-weight-medium);
+}
+
+small,
+.text-small,
+.viz-badge {
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+}
+
+.text-muted {
+  color: var(--muted-foreground);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.viz-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.viz-controls > .form-label {
+  display: grid;
+  min-width: min(100%, 260px);
+  flex: 1 1 280px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 2px 12px;
+  margin-bottom: 0;
+}
+
+.viz-controls > .form-label > :is(.form-control, .form-range, .form-select) {
+  grid-column: 1 / -1;
+}
+
+.btn,
+.nav-link,
+.form-check-input,
+.form-control,
+.form-range,
+.form-select {
+  font: inherit;
+}
+
+.btn,
+.nav-link {
+  appearance: button;
+  display: inline-flex;
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0 8px;
+  -webkit-app-region: no-drag;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: var(--cursor-interaction, pointer);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.btn:is(.btn-block, .viz-tile) {
+  inline-size: 100%;
+}
+
+.btn.viz-tile {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+a.btn {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn:not(:disabled):hover,
+.nav-link:not(:disabled):not([aria-disabled="true"]):hover {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.btn-primary {
+  border-color: transparent;
+  color: var(--primary-foreground);
+  background: var(--foreground);
+  background-clip: padding-box;
+}
+
+.btn-primary .text-muted {
+  color: color-mix(in srgb, var(--primary-foreground) 50%, transparent);
+}
+
+.btn-primary:not(:disabled):hover {
+  background: color-mix(in srgb, var(--foreground) 80%, transparent);
+  background-clip: padding-box;
+}
+
+.btn-ghost {
+  border-color: transparent;
+  color: var(--muted-foreground);
+  background: transparent;
+}
+
+.btn-ghost:not(:disabled):hover {
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.nav-pills .nav-link {
+  min-width: 0;
+  border-color: transparent;
+  color: var(--muted-foreground);
+  background: transparent;
+}
+
+.nav-justified .nav-link {
+  flex: 1 1 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.nav-pills .nav-link.active {
+  color: var(--foreground);
+  background: var(--muted);
+}
+
+.btn:disabled,
+.nav-link:disabled,
+.nav-link[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+[data-lucide] {
+  stroke-width: 1.6;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--foreground);
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  padding: 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  color: var(--foreground);
+  background: var(--secondary);
+}
+
+.form-control::placeholder {
+  color: var(--muted-foreground);
+}
+
+.form-control[type="file"] {
+  padding: 0;
+  overflow: hidden;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control[type="file"]::file-selector-button {
+  min-height: 26px;
+  margin-right: 8px;
+  padding: 0 8px;
+  border: 0;
+  border-right: 1px solid var(--input);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: inherit;
+  font: inherit;
+}
+
+.form-control[type="file"]:not(:disabled):hover::file-selector-button {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-control-color[type="color"] {
+  width: 40px;
+  height: 28px;
+  padding: 3px;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control-color[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.form-control-color[type="color"]::-webkit-color-swatch {
+  border: 0;
+  border-radius: calc(var(--radius-lg) - 4px);
+  corner-shape: var(--corner-shape);
+}
+
+textarea.form-control {
+  height: auto;
+  min-height: 72px;
+  padding: 8px 10px;
+  resize: vertical;
+}
+
+.form-control:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-control:disabled,
+.form-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.form-select {
+  appearance: none;
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  margin: 0;
+  padding: 0 32px 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  color: var(--foreground);
+  background-color: var(--secondary);
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted-foreground) 50%),
+    linear-gradient(135deg, var(--muted-foreground) 50%, transparent 50%);
+  background-position:
+    calc(100% - 14px) 50%,
+    calc(100% - 10px) 50%;
+  background-repeat: no-repeat;
+  background-size: 4px 4px;
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-select:not(:disabled):hover {
+  background-color: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-select:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-check {
+  display: flex;
+  min-height: 20px;
+  align-items: center;
+  gap: 6px;
+}
+
+.form-check-input {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  margin: 0;
+  border: 1px solid var(--input);
+  color: var(--primary-foreground);
+  background-color: transparent;
+  cursor: var(--cursor-interaction, default);
+  transition:
+    background-color 150ms,
+    border-color 150ms,
+    box-shadow 150ms;
+}
+
+.form-check:not(.form-switch) .form-check-input[type="checkbox"] {
+  border-color: var(--input);
+  border-radius: var(--radius-sm);
+  corner-shape: var(--corner-shape);
+  background-color: var(--secondary);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input:not(:disabled):not(:checked):hover {
+  background-color: var(--card);
+}
+
+.form-check:not(.form-switch) .form-check-input[type="checkbox"]:checked {
+  border-color: var(--primary);
+  background-color: var(--primary);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input[type="checkbox"]:checked::before {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--primary-foreground);
+  content: "";
+  mask: var(--checkmark-image) center / 12px 12px no-repeat;
+}
+
+.form-check-input[type="radio"] {
+  width: 14px;
+  height: 14px;
+  border-radius: var(--radius-full);
+}
+
+.form-check-input[type="radio"]:checked {
+  border: 2px solid var(--primary);
+  background:
+    radial-gradient(circle, var(--primary-foreground) 0 2.5px, transparent 3px),
+    var(--primary);
+}
+
+.form-check:not(.form-switch) .form-check-input:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+}
+
+.form-switch .form-check-input:disabled,
+.form-switch .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.form-check-label {
+  color: var(--foreground);
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-switch .form-check-input {
+  position: relative;
+  width: 32px;
+  height: 20px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+  box-shadow: none;
+  transition: background-color 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input::before {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  border: 1px solid light-dark(var(--primary-foreground), var(--foreground));
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+  box-shadow: var(--shadow-sm);
+  content: "";
+  transform: translate(2px, -50%);
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input:checked {
+  background: var(--primary);
+}
+
+.form-switch .form-check-input:checked::before {
+  transform: translate(14px, -50%);
+}
+
+.form-switch .form-check-input:focus-visible {
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+.form-range {
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 28px;
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  outline: none;
+  border: 0;
+  accent-color: var(--primary);
+  background: linear-gradient(
+      color-mix(in srgb, var(--foreground) 7%, transparent),
+      color-mix(in srgb, var(--foreground) 7%, transparent)
+    )
+    center / 100% 2px no-repeat;
+}
+
+.form-range::-webkit-slider-runnable-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-webkit-slider-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range::-moz-range-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-moz-range-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.btn:not(.btn-primary, .viz-tile):is(
+  [aria-pressed="true"],
+  [aria-selected="true"],
+  .is-selected
+) {
+  border-color: var(--primary);
+  color: var(--primary-foreground);
+  background: var(--primary);
+}
+
+.btn.viz-tile:is([aria-pressed="true"], [aria-selected="true"], .is-selected) {
+  border-color: var(--primary);
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+
+.btn:focus-visible,
+.nav-link:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+@media (pointer: coarse) {
+  .btn,
+  .nav-link,
+  .form-control,
+  .form-select {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Keep small-screen WebKit from zooming when a text field receives focus. */
+  .form-control,
+  .form-select {
+    font-size: max(16px, var(--font-size-normal));
+  }
+
+  .form-control[type="file"]::file-selector-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .form-control-color[type="color"] {
+    width: 44px;
+    height: 44px;
+  }
+
+  .form-control:is(
+    [type="date"],
+    [type="datetime-local"],
+    [type="month"],
+    [type="time"],
+    [type="week"]
+  ) {
+    min-width: 0;
+    max-width: 100%;
+    padding-block: 8px;
+  }
+
+  .form-check {
+    min-height: 44px;
+    padding-inline: 15px;
+  }
+
+  .form-check-input {
+    position: relative;
+  }
+
+  .form-check-input::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    content: "";
+    transform: translate(-50%, -50%);
+  }
+
+  .form-check-label {
+    display: inline-flex;
+    min-width: 44px;
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .form-range {
+    height: 44px;
+    touch-action: pan-y;
+  }
+
+  .form-range::-webkit-slider-runnable-track {
+    height: 44px;
+  }
+
+  .form-range::-moz-range-track {
+    height: 44px;
+  }
+
+  .form-range::-webkit-slider-thumb {
+    margin-top: 12px;
+  }
+}
+
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+#widget > svg {
+  width: 100%;
+}
+
+/* Model-authored chart rules can otherwise stretch icons after these styles load. */
+svg.lucide {
+  display: block;
+  width: var(--icon-size) !important;
+  height: var(--icon-size) !important;
+  flex: none;
+  margin: 0 !important;
+  stroke-width: 1.6;
+}
+
+.text-warning,
+.text-destructive {
+  color: var(--destructive);
+}
+
+html>body{padding:0}</style>
+</head>
+<body>
+<div id="smartape-3d">
+  <style>
+    #smartape-3d {color:var(--foreground);}
+    #smartape-3d .st-head {display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+    #smartape-3d .st-stage {position:relative;width:100%;height:440px;}
+    #smartape-3d canvas {display:block;width:100%;height:100%;touch-action:pan-y;cursor:grab;}
+    #smartape-3d canvas:active {cursor:grabbing;}
+    #smartape-3d .st-controls {display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;}
+    #smartape-3d .st-field {min-width:0;}
+    #smartape-3d .st-select {margin-top:14px;}
+    #smartape-3d .st-detail {margin:12px 0;min-height:2.8em;}
+    #smartape-3d .st-bottom {display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;align-items:center;}
+    @media(max-width:460px){#smartape-3d .st-stage{height:370px;}#smartape-3d .st-controls{grid-template-columns:1fr;gap:10px;}}
+
+    :root{color-scheme:dark;--foreground:#e3eee8;--muted-foreground:#9cb0a6;--background:#101916;--border:#4b6558;--muted:#354c40;--viz-series-1:#e8b775;--viz-series-2:#c4ef78;--viz-series-3:#65b9df;--primary:#c4ef78;--primary-foreground:#14200b;--card:#1c2b23;--input:#344c3e;--secondary:#23372c;--secondary-foreground:#deece1}
+    html,body{background:#0b120f!important;color:#e3eee8!important;margin:0}
+    #smartape-3d{max-width:1200px;margin:auto;padding:24px;font-family:system-ui,sans-serif}
+    #smartape-3d h3{font-size:23px;letter-spacing:-.7px}
+    #smartape-3d .st-stage{height:580px;background:radial-gradient(ellipse at 45% 40%,#203629,#0e1712 75%);border:1px solid #304a38;border-radius:20px;margin:22px 0;overflow:hidden}
+    #smartape-3d .st-head{border-bottom:1px solid #294334;padding-bottom:16px}
+    #smartape-3d .st-detail{background:#203127;border-left:3px solid #c4ef78;padding:18px;border-radius:0 10px 10px 0;line-height:1.7;min-height:80px}
+    #smartape-3d .st-controls{gap:20px;padding:15px 0}
+    #smartape-3d .st-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0}
+    #smartape-3d .st-toolbar button{border:1px solid #45604d;background:#1c3023;color:#dcebcf;padding:10px 15px;border-radius:10px;cursor:pointer}
+    #smartape-3d .st-toolbar button:hover{background:#304a32}
+    #smartape-3d .st-toolbar button[aria-pressed=true]{background:#c4ef78;color:#172212}
+    #smartape-3d canvas{touch-action:none}
+    #smartape-3d section{border-top:1px solid #294334;padding-top:20px}
+    #smartape-3d section p{line-height:1.7}
+    @media(max-width:600px){#smartape-3d{padding:12px}#smartape-3d .st-stage{height:460px}#smartape-3d h3{font-size:20px}}
+
+    #smartape-3d .st-stage{height:690px;background:#101916;border-color:#314b3b;margin:14px 0}
+    #smartape-3d .st-detail{font-size:15px;max-width:100%;min-height:0}
+    #smartape-3d .st-head h3{font-size:24px}
+    #smartape-3d .st-controls{border-top:1px solid #304b3c;margin-top:20px}
+    #smartape-3d .st-select{margin:18px 0 8px}
+    @media(max-width:600px){#smartape-3d .st-stage{height:610px}#smartape-3d .st-toolbar span{width:100%;font-size:12px}}
+
+    #smartape-3d .st-legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px;margin:16px 0 24px}
+    #smartape-3d .st-legend button{display:flex;align-items:center;gap:10px;text-align:left;color:#d7e5da;background:#18271e;border:1px solid #344c3e;border-radius:9px;padding:10px 12px;font:inherit;font-size:13px;cursor:pointer}
+    #smartape-3d .st-legend button span{display:grid;place-items:center;flex:none;width:29px;height:29px;border:1px solid #8fa696;border-radius:50%;font-size:12px}
+    #smartape-3d .st-legend button:hover,#smartape-3d .st-legend button[aria-pressed=true]{background:#2b402b;border-color:#c4ef78}
+  </style>
+  <div class="st-head"><h3>Smartape · uhlíkový senzor + pasivní UHF RFID</h3><span class="text-small">Skladba od vrchního krytu po lepidlo · bez baterie, s čipem</span></div>
+  <div class="st-toolbar"><button id="st-assembled" type="button">Složená páska</button><button id="st-exploded" type="button">Všechny vrstvy</button><button id="st-electronics" type="button" aria-pressed="false">Jen elektronika</button><button id="st-reset" type="button">Výchozí pohled</button><span class="text-small">Klikni na značku nebo položku legendy · tažením otáčej</span></div><div class="st-stage"><canvas role="img" aria-label="Rozložený 3D model osmi vrstev pásky, uhlíkového senzoru, dipólové UHF antény, RFID čipu, kondenzátoru a elektrických propojení">Trojrozměrný model pasivní pásky Smartape. Součásti lze vybírat v seznamu pod modelem.</canvas></div>
+<div class="st-legend" aria-label="Legenda součástí"><button type="button" data-layer-note="coat" aria-pressed="false"><span>1</span>Vrchní ochranný tape</button><button type="button" data-layer-note="chip" aria-pressed="false"><span>IC</span>RFID senzorový čip</button><button type="button" data-layer-note="capacitor" aria-pressed="false"><span>C</span>Zásobní kondenzátor</button><button type="button" data-layer-note="island" aria-pressed="false"><span>2</span>Zpevněný elektronický ostrůvek</button><button type="button" data-layer-note="antenna" aria-pressed="false"><span>3</span>UHF RFID anténa a přizpůsobení</button><button type="button" data-layer-note="dielectric" aria-pressed="false"><span>4</span>Izolační mezivrstva</button><button type="button" data-layer-note="sensor" aria-pressed="false"><span>5</span>Uhlíkový tenzometr</button><button type="button" data-layer-note="reference" aria-pressed="false"><span>P</span>Přívody a propojení</button><button type="button" data-layer-note="tpu" aria-pressed="false"><span>6</span>Pružný substrát</button><button type="button" data-layer-note="adhesive" aria-pressed="false"><span>7</span>Spodní lepivá plocha</button><button type="button" data-layer-note="liner" aria-pressed="false"><span>8</span>Odlepovací podložka</button></div>
+  <div class="st-controls">
+    <div class="st-field"><label class="form-label" for="st-explode">Rozložení vrstev <output id="st-explode-out" class="tabular-nums">85 %</output></label><input id="st-explode" class="form-range" type="range" min="0" max="100" value="85"/></div>
+    <div class="st-field"><label class="form-label" for="st-bend">Ohyb přes kloub <output id="st-bend-out" class="tabular-nums">0°</output></label><input id="st-bend" class="form-range" type="range" min="0" max="120" value="0" step="5"/></div>
+  </div>
+  <div class="st-select"><label class="form-label" for="st-part">Prohlédnout samostatnou součást</label><select id="st-part" class="form-select"><option value="all">Celá páska · všechny součásti</option><option value="coat">1 · Vrchní ochranný tape</option><option value="chip">IC · RFID senzorový čip</option><option value="capacitor">C · Zásobní kondenzátor</option><option value="island">2 · Zpevněný elektronický ostrůvek</option><option value="antenna">3 · UHF RFID anténa a přizpůsobení</option><option value="dielectric">4 · Izolační mezivrstva</option><option value="sensor">5 · Uhlíkový tenzometr</option><option value="reference">P · Přívody a propojení</option><option value="tpu">6 · Pružný substrát</option><option value="adhesive">7 · Spodní lepivá plocha</option><option value="liner">8 · Odlepovací podložka</option></select></div>
+  <div id="st-detail" class="st-detail text-small" aria-live="polite">Přehled ukazuje pořadí vrstev. Klikni na značku v modelu nebo na položku legendy níže: zobrazí se samostatně, bez překrývání. Čip a kondenzátor najdeš v pohledu „Jen elektronika“.</div>
+  <div class="st-bottom"><div class="viz-row"><button type="button" class="btn" id="st-oblique" aria-pressed="true">Šikmý pohled</button><button type="button" class="btn" id="st-top" aria-pressed="false">Shora</button><button type="button" class="btn" id="st-side" aria-pressed="false">Z boku</button></div><span class="text-small">Otáčení tažením</span></div>
+  <p class="text-small">Koncepce 120 × 40 mm · textury, vzor lepidla a odlepovací růžek jsou ilustrativní · tloušťky zvětšené · materiály neověřené</p>
+<details style="margin-top:28px"><summary style="cursor:pointer;padding:16px;border-top:1px solid #45604d">Jak funguje RFID a podrobný popis všech součástí</summary><section aria-label="Vysvětlivky vrstev" style="margin-top:10px"><h3>Jak proudí energie a informace</h3><p><strong>Energie:</strong> hub → UHF anténa → usměrňovač / regulátor uvnitř IC → měřicí obvod + kondenzátor.</p><p><strong>Měření:</strong> uhlíkový odpor → buzení a analogové rozhraní (AFE) → ADC uvnitř IC → RFID logika → změna zátěže antény → odezva do hubu.</p><p>Čip neposílá vlastní rádiovou nosnou: moduluje odraz signálu čtečky. V modelu je UHF dipól pro vývoj metrového cíle, nikoli blízkopolní NFC cívka. Bez dostatečné energie ze čtečky není zaručeno měření ani přenos.</p><label class="form-check"><input id="st-liner" type="checkbox" class="form-check-input" checked><span class="form-check-label">Zobrazit odlepovací podložku před použitím</span></label><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:18px"><div><button type="button" class="btn" data-layer-note="coat" aria-pressed="false">1 · Vrchní ochranný tape</button><p class="text-small">Pružný vrchní kryt chrání dráhy a elektroniku. Textilní textura je ilustrativní možnost vzhledu, nikoli potvrzený materiál ani vodotěsná vrstva. V oblasti čipu má lokální kapsu; čip a kondenzátor nelze natahovat. Voděodolnost vyžaduje utěsnění a test.</p></div><div><button type="button" class="btn" data-layer-note="chip" aria-pressed="false">IC · RFID senzorový čip</button><p class="text-small">Funkční bloky: usměrňovač RF energie a regulátor → napájení měřicího rozhraní; buzení odporového senzoru → analogový vstup (AFE) → ADC → digitální hodnota → RFID logika a modulátor zpětného rozptylu. Nemá baterii. Konkrétní čip, odporový rozsah a pasivní měření zatím nejsou vybrané a ověřené.</p></div><div><button type="button" class="btn" data-layer-note="capacitor" aria-pressed="false">C · Zásobní kondenzátor</button><p class="text-small">Malý externí kondenzátor vyrovnává krátké odběry energie získané z antény. Nenahrazuje baterii; bez dostatečného pole čtečky měření neprobíhá. Hodnota a potřeba součástky závisí na čipu.</p></div><div><button type="button" class="btn" data-layer-note="island" aria-pressed="false">2 · Zpevněný elektronický ostrůvek</button><p class="text-small">Lokální nosič čipu, kondenzátoru a spojů u kotvy pásky, mimo hlavní natahovanou zónu. Izoluje pevné součástky od tahu. Jde o samostatnou mechanickou část, nikoli roztažitelný čip.</p></div><div><button type="button" class="btn" data-layer-note="antenna" aria-pressed="false">3 · UHF RFID anténa a přizpůsobení</button><p class="text-small">Dvě ramena antény jsou připojena k RF vstupům čipu. Anténa přijímá energii z hubu a vrací modulovanou odezvu změnou odrazu (backscatter). Zobrazen je schematický dipól, nikoli NFC cívka. Rozměry, impedanční přizpůsobení a fungování na těle vyžadují RF návrh; dosah 1 m není potvrzen.</p></div><div><button type="button" class="btn" data-layer-note="dielectric" aria-pressed="false">4 · Izolační mezivrstva</button><p class="text-small">Odděluje anténní dráhy od uhlíkového senzoru a zajišťuje elektrickou izolaci v místech křížení. Průchody pro připojení senzoru se navrhnou výrobně. Tloušťka a vliv na anténu nejsou určené.</p></div><div><button type="button" class="btn" data-layer-note="sensor" aria-pressed="false">5 · Uhlíkový tenzometr</button><p class="text-small">Souvislá dráha z uhlíkového inkoustu v pružném pojivu. Při deformaci mění odpor, který čip změří přes dva přívody. Převod na úhel vyžaduje kalibraci; odporový rozsah, hystereze a vliv teploty se musí změřit.</p></div><div><button type="button" class="btn" data-layer-note="reference" aria-pressed="false">P · Přívody a propojení</button><p class="text-small">Dva přívody propojují konce tenzometru s měřicím vstupem a návratem čipu. Model ukazuje také průchod mezi vrstvami. Je to funkční schéma, nikoli konkrétní pinout: zapojení buzení a případného referenčního odporu závisí na vybraném čipu.</p></div><div><button type="button" class="btn" data-layer-note="tpu" aria-pressed="false">6 · Pružný substrát</button><p class="text-small">TPU nebo jiný elastomer nese senzor a přenáší deformaci kloubu. Anténní zóna a kotva musí být navrženy tak, aby tah nerozladil anténu a nepoškodil spoje.</p></div><div><button type="button" class="btn" data-layer-note="adhesive" aria-pressed="false">7 · Spodní lepivá plocha</button><p class="text-small">Jednorázové lepidlo určené pro kontakt s kůží drží pásku po dobu tréninku. Přenos pohybu, přilnavost za potu a snášenlivost s kůží vyžadují ověření.</p></div><div><button type="button" class="btn" data-layer-note="liner" aria-pressed="false">8 · Odlepovací podložka</button><p class="text-small">Chrání spodní lepidlo před použitím. Před nalepením se odstraní; nezůstává mezi kůží a senzorem.</p></div></div><p><strong>Koncepční zapojení, nikoli hotový RF návrh ani výrobní dokumentace.</strong> Čip a jeho bloky jsou zvětšené pro čitelnost. EMC, bezpečnost na kůži, přesnost, rychlost měření, dosah a cena 5–10 Kč nejsou ověřené. AMC ani kovový štít zde nejsou navrženy; nelze je přidat bez nového ladění antény.</p><p class="text-small">Technický příklad architektury: <a href="https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/1881/SL900A_Datasheet_v5.pdf" target="_blank" rel="noopener">datasheet ams SL900A</a> (RF napájení, senzorové rozhraní a ADC). Nejde o závazně vybraný nebo cenově ověřený čip.</p></section></details>
+  <script>
+  (()=>{
+    const root=document.getElementById('smartape-3d');
+    const canvas=root.querySelector('canvas'),ctx=canvas.getContext('2d');
+    const ex=root.querySelector('#st-explode'),be=root.querySelector('#st-bend'),part=root.querySelector('#st-part');
+    const descriptions={"all": "Kompletní pasivní UHF koncepce s čipem. Čísla 1–8 označují vrstvy od povrchu ke kůži a odlepovací podložku.", "coat": "1 · Vrchní ochranný tape — Pružný vrchní kryt chrání dráhy a elektroniku. Textilní textura je ilustrativní možnost vzhledu, nikoli potvrzený materiál ani vodotěsná vrstva. V oblasti čipu má lokální kapsu; čip a kondenzátor nelze natahovat. Voděodolnost vyžaduje utěsnění a test.", "chip": "IC · RFID senzorový čip — Funkční bloky: usměrňovač RF energie a regulátor → napájení měřicího rozhraní; buzení odporového senzoru → analogový vstup (AFE) → ADC → digitální hodnota → RFID logika a modulátor zpětného rozptylu. Nemá baterii. Konkrétní čip, odporový rozsah a pasivní měření zatím nejsou vybrané a ověřené.", "capacitor": "C · Zásobní kondenzátor — Malý externí kondenzátor vyrovnává krátké odběry energie získané z antény. Nenahrazuje baterii; bez dostatečného pole čtečky měření neprobíhá. Hodnota a potřeba součástky závisí na čipu.", "island": "2 · Zpevněný elektronický ostrůvek — Lokální nosič čipu, kondenzátoru a spojů u kotvy pásky, mimo hlavní natahovanou zónu. Izoluje pevné součástky od tahu. Jde o samostatnou mechanickou část, nikoli roztažitelný čip.", "antenna": "3 · UHF RFID anténa a přizpůsobení — Dvě ramena antény jsou připojena k RF vstupům čipu. Anténa přijímá energii z hubu a vrací modulovanou odezvu změnou odrazu (backscatter). Zobrazen je schematický dipól, nikoli NFC cívka. Rozměry, impedanční přizpůsobení a fungování na těle vyžadují RF návrh; dosah 1 m není potvrzen.", "dielectric": "4 · Izolační mezivrstva — Odděluje anténní dráhy od uhlíkového senzoru a zajišťuje elektrickou izolaci v místech křížení. Průchody pro připojení senzoru se navrhnou výrobně. Tloušťka a vliv na anténu nejsou určené.", "sensor": "5 · Uhlíkový tenzometr — Souvislá dráha z uhlíkového inkoustu v pružném pojivu. Při deformaci mění odpor, který čip změří přes dva přívody. Převod na úhel vyžaduje kalibraci; odporový rozsah, hystereze a vliv teploty se musí změřit.", "reference": "P · Přívody a propojení — Dva přívody propojují konce tenzometru s měřicím vstupem a návratem čipu. Model ukazuje také průchod mezi vrstvami. Je to funkční schéma, nikoli konkrétní pinout: zapojení buzení a případného referenčního odporu závisí na vybraném čipu.", "tpu": "6 · Pružný substrát — TPU nebo jiný elastomer nese senzor a přenáší deformaci kloubu. Anténní zóna a kotva musí být navrženy tak, aby tah nerozladil anténu a nepoškodil spoje.", "adhesive": "7 · Spodní lepivá plocha — Jednorázové lepidlo určené pro kontakt s kůží drží pásku po dobu tréninku. Přenos pohybu, přilnavost za potu a snášenlivost s kůží vyžadují ověření.", "liner": "8 · Odlepovací podložka — Chrání spodní lepidlo před použitím. Před nalepením se odstraní; nezůstává mezi kůží a senzorem."};
+    let width=736,height=660,yaw=-0.12,tilt=0.35,explosion=.85,bend=0,selected='all',palette={},faces=[],strokes=[],anchors=[];
+    let activePointer=null,lastX=0,lastY=0,frame=0,dragDistance=0,badgeHits=[],electronicsOnly=false;
+    const cssColor=(token)=>{const el=document.createElement('span');el.style.color=`var(${token})`;root.appendChild(el);const color=getComputedStyle(el).color;el.remove();return color;};
+    function colors(){palette={fg:cssColor('--foreground'),muted:cssColor('--muted-foreground'),line:cssColor('--border'),surface:cssColor('--background'),skin:cssColor('--muted'),sensor:cssColor('--viz-series-1'),reference:cssColor('--viz-series-2'),metal:cssColor('--viz-series-3'),carbon:'#b5c1bc',chipbody:'#263f35',coat:'#b8d7c7',substrate:'#75b8a0',insulator:'#7aaabd',adhesive:'#d0b777',liner:'#b6bbc6'};}
+    const layers=[
+      {id:'liner',level:0,thick:.3,label:'8',color:'liner'},
+      {id:'adhesive',level:1,thick:.4,label:'7',color:'adhesive'},
+      {id:'tpu',level:2,thick:.5,label:'6',color:'substrate'},
+      {id:'dielectric',level:3.8,thick:.3,label:'4',color:'insulator'},
+      {id:'coat',level:6,thick:.45,label:'1',color:'coat'}
+    ];
+    function curved(s,z,h=0){
+      const a=bend*Math.PI/180,half=20;
+      if(a<.0001)return[s,h,z];
+      const r=40/a,q=Math.max(-half,Math.min(half,s))/r,tail=Math.max(0,Math.abs(s)-half),sign=Math.sign(s);
+      return[(r+h)*Math.sin(q)+sign*tail*Math.cos(a/2),(r+h)*Math.cos(q)-r-tail*Math.sin(a/2),z];
+    }
+    function point(s,z,level,extra=0){const p=curved(s,z,level*.95+extra);p[1]+=level*explosion*32;return p;}
+    function view(p){const x=p[0]*Math.cos(yaw)+p[2]*Math.sin(yaw),z=-p[0]*Math.sin(yaw)+p[2]*Math.cos(yaw);return[x,-p[1]*Math.cos(tilt)+z*Math.sin(tilt),p[1]*Math.sin(tilt)+z*Math.cos(tilt)];}
+    function halfWidth(x){const a=Math.abs(x);return a<=50?20:10+Math.sqrt(Math.max(0,100-(a-50)*(a-50)));}
+    function face(points,id,color,alpha=1){faces.push({points,id,color,alpha});}
+    function line(points,id,color,size=1.5,alpha=1){strokes.push({points,id,color,size,alpha});}
+    function sheet(layer){
+      const {id,level,thick,color}=layer;
+      if(electronicsOnly)return;
+      if(id==='liner'&&!root.querySelector('#st-liner').checked)return;
+      let alpha=id==='coat'?.78:id==='tpu'?.38:id==='adhesive'?.82:id==='dielectric'?.32:.96;
+      for(let i=0;i<60;i++){
+        const x=-60+i*2,nx=x+2,w=halfWidth(x),nw=halfWidth(nx);
+
+        face([point(x,-w,level,thick),point(nx,-nw,level,thick),point(nx,nw,level,thick),point(x,w,level,thick)],id,color,alpha);
+        for(const side of [-1,1])face([point(x,side*w,level,0),point(nx,side*nw,level,0),point(nx,side*nw,level,thick),point(x,side*w,level,thick)],id,color,Math.min(1,alpha+.2));
+      }
+      // Illustrative surface finishes, not a manufacturing specification.
+      const h=thick+.045;
+      function surfaceLine(coords,tone='fg',size=.6,opacity=.22){line(coords.map(([x,z])=>point(x,z,level,h)),id,tone,size,opacity);}
+      if(id==='coat'){
+        // Woven top cover: crossing warp and weft, with a reinforced perimeter.
+        for(let z=-17;z<=17;z+=2)surfaceLine(Array.from({length:29},(_,i)=>[-54+i*4,z]),'fg',.65,.24);
+        for(let x=-54;x<=54;x+=2.4)surfaceLine([[x,-16],[x,16]],'surface',.7,.45);
+        for(const z of [-18,18])surfaceLine(Array.from({length:28},(_,i)=>[-54+i*4,z]),'fg',1,.65);
+        for(let x=-50;x<=50;x+=5)for(const z of [-18,18])surfaceLine([[x,z-1],[x+1.5,z+1]],'surface',1,.7);
+      }
+      if(id==='tpu'||id==='dielectric'){
+        // Smooth translucent films, with broad specular ribbons.
+        for(const z of [-13,-12,-11])surfaceLine([[-50,z],[48,z]],'fg',1.6,.18);
+        surfaceLine([[-52,16],[50,16]],'fg',1.3,.65);
+        if(id==='dielectric')for(let x=-48;x<50;x+=10)surfaceLine([[x,-17],[x+5,-17]],'metal',1,.5);
+      }
+      if(id==='adhesive'){
+        // A repeating wavy coating pattern; final coating remains to be chosen.
+        for(let base=-16;base<=16;base+=5){
+          const path=Array.from({length:53},(_,i)=>{const x=-52+i*2;return[x,base+1.1*Math.sin(x*.32)]});
+          surfaceLine(path,'surface',2.2,.35);
+          surfaceLine(path.map(([x,z])=>[x,z+.7]),'fg',.6,.35);
+        }
+      }
+      if(id==='liner'){
+        for(let x=-46;x<=44;x+=15){surfaceLine([[x,-13],[x+4,-8],[x,-3]],'surface',1,.5);surfaceLine([[x,3],[x+4,8],[x,13]],'surface',1,.5);}
+        // Lifted release tab, enlarged for readability.
+        face([point(45,6,level,h),point(59,6,level,h+4),point(59,17,level,h+4),point(45,17,level,h)],id,'coat',1);
+        line([point(45,6,level,h+.02),point(45,17,level,h+.02)],id,'surface',1,.5);
+      }
+      for(const zsign of [-1,1])line(Array.from({length:61},(_,i)=>point(-60+i*2,zsign*halfWidth(-60+i*2),level,thick)),id,'line',.8,.8);
+      for(const side of [-1,1])line([point(side*60,-10,level,thick),point(side*60,10,level,thick)],id,'line',.8,.8);
+    }
+    function track(path,id,color,level=5,size=2){
+      for(let i=1;i<path.length;i++){
+        const a=path[i-1],b=path[i],steps=Math.max(1,Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/2));
+        const pts=Array.from({length:steps+1},(_,j)=>point(a[0]+(b[0]-a[0])*j/steps,a[1]+(b[1]-a[1])*j/steps,level,.35));
+        for(let j=1;j<pts.length;j++)line([pts[j-1],pts[j]],id,color,size);
+      }
+    }
+    function geometry(){
+      faces=[];strokes=[];anchors=[];
+      layers.forEach(sheet);
+      // Schematic physical routing, not impedance-matched PCB artwork.
+      track([[-28,-7],[32,-7],[32,7],[-28,7]],'sensor','carbon',3,5.5);
+      for(const z of [-7,7]){
+        track([[-28,z],[-42,z]],'reference','metal',3,2.3);
+        line([point(-42,z,3,.35),point(-42,z,4.7,.35)],'reference','metal',2.3);
+        track([[-42,z],[-42,z/2]],'reference','metal',4.7,2.3);
+      }
+      face([point(-51,-12,4.7),point(-33,-12,4.7),point(-33,12,4.7),point(-51,12,4.7)],'island','skin',.95);
+      // Dipole arms share the RF feed region at the IC, with schematic meanders.
+      track([[-44,-3],[-48,-3],[-48,-16],[-15,-16],[-15,-12],[15,-12],[15,-16],[50,-16]],'antenna','sensor',4.3,3.2);
+      track([[-44,3],[-48,3],[-48,16],[-15,16],[-15,12],[15,12],[15,16],[50,16]],'antenna','sensor',4.3,3.2);
+      for(const z of [-3,3])line([point(-44,z,4.3,.35),point(-44,z,5,.2)],'antenna','sensor',2);
+      function block(x,z,dx,dz,id,color){
+        const lo=5,hi=5.8;
+        face([point(x-dx,z-dz,lo,.8),point(x+dx,z-dz,lo,.8),point(x+dx,z+dz,lo,.8),point(x-dx,z+dz,lo,.8)],id,color,1);
+        for(const sign of [-1,1])face([point(x-dx,z+sign*dz,lo),point(x+dx,z+sign*dz,lo),point(x+dx,z+sign*dz,hi),point(x-dx,z+sign*dz,hi)],id,color,.8);
+      }
+      block(-42,0,4,4,'chip','chipbody');block(-36,8,2,2,'capacitor','reference');
+      track([[-39,3],[-36,3],[-36,6]],'capacitor','metal',5,1.5);
+      track([[-44,4],[-44,11],[-36,11],[-36,10]],'capacitor','metal',5,1.5);
+      layers.filter(l=>!electronicsOnly).filter(l=>l.id!=='liner'||root.querySelector('#st-liner').checked).forEach(l=>anchors.push({p:point(55,14,l.level,l.thick),label:l.label,id:l.id,color:'fg'}));
+      anchors.push({p:point(5,-7,3,.6),label:'5',id:'sensor',color:'fg'});
+      anchors.push({p:point(42,-16,4.3,.6),label:'3',id:'antenna',color:'sensor'});
+      anchors.push({p:point(-33,-10,4.7,.6),label:'2',id:'island',color:'fg'});
+      anchors.push({p:point(-42,0,5,1),label:'IC',id:'chip',color:'fg'});
+      anchors.push({p:point(-36,8,5,1),label:'C',id:'capacitor',color:'reference'});
+      anchors.push({p:point(-31,7,3,.6),label:'P',id:'reference',color:'metal'});
+
+    }
+    function draw(){
+      frame=0;
+      ctx.clearRect(0,0,width,height);
+      geometry();
+      if(selected!=='all'){faces=faces.filter(f=>f.id===selected);strokes=strokes.filter(f=>f.id===selected);anchors=anchors.filter(f=>f.id===selected);}
+      if(!faces.length&&!strokes.length){ctx.fillStyle=palette.fg;ctx.font='16px Arial';ctx.fillText('Tato vrstva je skrytá. Zapni podložku nebo zobraz všechny vrstvy.',20,70);return;}
+      const points=[...faces.flatMap(f=>f.points),...strokes.flatMap(s=>s.points)].map(view);
+      const xs=points.map(p=>p[0]),ys=points.map(p=>p[1]);
+      const minX=Math.min(...xs),maxX=Math.max(...xs),minY=Math.min(...ys),maxY=Math.max(...ys);
+      const labelSpace=40;const scale=Math.min((width-labelSpace-45)/Math.max(30,maxX-minX),(height-95)/Math.max(35,maxY-minY),selected==='all'?7:9);
+      const ox=width/2-(minX+maxX)*scale/2,oy=height/2-(minY+maxY)*scale/2;
+      const project=p=>{const v=view(p);return[ox+v[0]*scale,oy+v[1]*scale,v[2]];};
+      const operations=[];
+      for(const f of faces){const pts=f.points.map(project);operations.push({...f,pts,depth:pts.reduce((s,p)=>s+p[2],0)/pts.length,type:'face'});}
+      for(const l of strokes){const pts=l.points.map(project);operations.push({...l,pts,depth:pts.reduce((s,p)=>s+p[2],0)/pts.length+.025,type:'line'});}
+      operations.sort((a,b)=>a.depth-b.depth);
+      for(const op of operations){
+        const inactive=selected!=='all'&&op.id!==selected;
+        ctx.globalAlpha=op.alpha*(inactive?.12:1);
+        ctx.beginPath();ctx.moveTo(op.pts[0][0],op.pts[0][1]);op.pts.slice(1).forEach(p=>ctx.lineTo(p[0],p[1]));
+        if(op.type==='face'){ctx.closePath();ctx.fillStyle=palette[op.color];ctx.fill();}
+        else{ctx.strokeStyle=palette[op.color];ctx.lineWidth=op.size*(op.id==='sensor'||op.id==='reference'?Math.min(1.4,scale/3):1);ctx.lineJoin='round';ctx.lineCap='round';ctx.stroke();}
+      }
+      ctx.globalAlpha=1;
+      const names={coat:'Vrchní tape',chip:'RFID čip + ADC',capacitor:'Zásobník energie',island:'Ostrůvek elektroniky',antenna:'UHF anténa',dielectric:'Elektrická izolace',sensor:'Uhlíkový tenzometr',reference:'Přívody senzoru',tpu:'Pružný substrát',adhesive:'Lepidlo na kůži',liner:'Odlepovací podložka'};
+      ctx.font='500 13px Arial';ctx.textBaseline='middle';badgeHits=[];
+      const visible=anchors.filter(a=>selected==='all'?(electronicsOnly?['chip','capacitor','antenna','sensor','reference'].includes(a.id):(!['chip','capacitor','reference'].includes(a.id)&&(explosion>.25||a.id==='coat'))):a.id===selected).map(a=>({...a,xy:project(a.p)})).sort((a,b)=>a.xy[1]-b.xy[1]);
+      visible.forEach(a=>{
+        const tx=Math.max(16,Math.min(width-16,a.xy[0])),ty=Math.max(38,Math.min(height-16,a.xy[1]));
+        ctx.beginPath();ctx.arc(tx,ty,13,0,Math.PI*2);ctx.fillStyle='#162a1e';ctx.fill();ctx.strokeStyle=selected===a.id?'#c4ef78':palette[a.color];ctx.lineWidth=1.5;ctx.stroke();ctx.fillStyle='#ecf4e9';ctx.textAlign='center';ctx.fillText(a.label,tx,ty);
+        badgeHits.push({x:tx-16,y:ty-16,w:32,h:32,id:a.id});
+      });
+      ctx.textAlign='left';ctx.fillStyle='#a7bdac';ctx.font='11px Arial';ctx.fillText('KONCEPČNÍ MODEL  /  NENÍ VÝROBNÍ DOKUMENTACE',16,22);
+      canvas.dataset.rendered='true';canvas.dataset.polygons=String(faces.length);canvas.dataset.bend=String(bend);
+    }
+    const request=()=>{if(!frame)frame=requestAnimationFrame(draw);};
+    function resize(){const rect=canvas.getBoundingClientRect();width=rect.width;height=rect.height;const dpr=Math.min(window.devicePixelRatio||1,2);canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);request();}
+    ex.addEventListener('input',()=>{explosion=Number(ex.value)/100;root.querySelector('#st-explode-out').textContent=`${ex.value} %`;request();});
+    be.addEventListener('input',()=>{bend=Number(be.value);root.querySelector('#st-bend-out').textContent=`${be.value}°`;request();});
+    part.addEventListener('change',()=>{selected=part.value;if(selected==='liner'){root.querySelector('#st-liner').checked=true;}if(selected!=='all'){electronicsOnly=false;root.querySelector('#st-electronics').setAttribute('aria-pressed','false');}root.querySelector('#st-detail').textContent=descriptions[selected];request();});
+    const noteButtons=root.querySelectorAll('[data-layer-note]');
+    function syncNotes(){noteButtons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.layerNote===part.value)));}
+    part.addEventListener('change',syncNotes);
+    noteButtons.forEach(b=>b.addEventListener('click',()=>{part.value=b.dataset.layerNote;part.dispatchEvent(new Event('change'));canvas.scrollIntoView({behavior:'auto',block:'center'});}));
+    root.querySelector('#st-liner').addEventListener('change',request);
+    const cameraButtons=['st-oblique','st-top','st-side'];
+    const setCamera=(id,y,t)=>{yaw=y;tilt=t;cameraButtons.forEach(b=>root.querySelector('#'+b).setAttribute('aria-pressed',String(b===id)));request();};
+    root.querySelector('#st-oblique').addEventListener('click',()=>setCamera('st-oblique',-.46,.64));
+    root.querySelector('#st-top').addEventListener('click',()=>setCamera('st-top',0,Math.PI/2));
+    root.querySelector('#st-side').addEventListener('click',()=>setCamera('st-side',0,.08));
+    canvas.addEventListener('pointerdown',e=>{dragDistance=0;activePointer=e.pointerId;lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture(e.pointerId);});
+    canvas.addEventListener('pointermove',e=>{if(activePointer!==e.pointerId)return;dragDistance+=Math.abs(e.clientX-lastX)+Math.abs(e.clientY-lastY);yaw+=(e.clientX-lastX)*.007;tilt=Math.max(.08,Math.min(1.55,tilt+(e.clientY-lastY)*.006));lastX=e.clientX;lastY=e.clientY;cameraButtons.forEach(b=>root.querySelector('#'+b).setAttribute('aria-pressed','false'));request();});
+    canvas.addEventListener('click',e=>{if(dragDistance>5)return;const r=canvas.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;const hit=badgeHits.find(b=>x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h);if(hit){part.value=hit.id;part.dispatchEvent(new Event('change'));}});
+    function preset(value){ex.value=String(value);ex.dispatchEvent(new Event('input'));part.value='all';part.dispatchEvent(new Event('change'));}
+    root.querySelector('#st-assembled').addEventListener('click',()=>{electronicsOnly=false;root.querySelector('#st-electronics').setAttribute('aria-pressed','false');preset(0);setCamera('st-oblique',-.46,.64);});
+    root.querySelector('#st-exploded').addEventListener('click',()=>{electronicsOnly=false;root.querySelector('#st-electronics').setAttribute('aria-pressed','false');be.value='0';be.dispatchEvent(new Event('input'));preset(85);setCamera('st-oblique',-.12,.35);});
+    root.querySelector('#st-electronics').addEventListener('click',e=>{electronicsOnly=!electronicsOnly;e.currentTarget.setAttribute('aria-pressed',String(electronicsOnly));part.value='all';part.dispatchEvent(new Event('change'));});
+    root.querySelector('#st-reset').addEventListener('click',()=>{electronicsOnly=false;root.querySelector('#st-electronics').setAttribute('aria-pressed','false');be.value='0';be.dispatchEvent(new Event('input'));preset(85);setCamera('st-oblique',-.12,.35);});
+    const release=()=>{activePointer=null;};canvas.addEventListener('pointerup',release);canvas.addEventListener('pointercancel',release);
+    new ResizeObserver(resize).observe(canvas);
+    const theme=()=>{colors();request();};
+    new MutationObserver(theme).observe(document.documentElement,{attributes:true,attributeFilter:['class','style','data-theme']});
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',theme);
+    colors();resize();
+  })();
+  </script>
+</div>
+
+<script src="https://unpkg.com/@floating-ui/core@1.7.3/dist/floating-ui.core.umd.min.js"></script>
+<script src="https://unpkg.com/@floating-ui/dom@1.7.4/dist/floating-ui.dom.umd.min.js"></script>
+<script>
+(() => {
+  if (window.FloatingUIDOM == null) {
+    return;
+  }
+  const { autoUpdate, computePosition, flip, offset, shift, size } =
+    window.FloatingUIDOM;
+  const tooltipPlacements = new Set(["top", "right", "bottom", "left"]);
+  const tooltipId = `codex-visualization-tooltip-${
+    window.crypto?.randomUUID?.() ?? Date.now().toString(36)
+  }`;
+  const tooltipGap = 5;
+  const hoverDelay = 700;
+  const skipDelay = 300;
+  let activeTrigger = null;
+  let pendingTrigger = null;
+  let tooltip = null;
+  let openTimeout = null;
+  let autoUpdateCleanup = null;
+  let positionRequest = 0;
+  let skipDelayUntil = 0;
+  let lastPointerWasTouch = false;
+  let pinnedByTouch = false;
+
+  const getTrigger = (target) =>
+    target?.nodeType === Node.ELEMENT_NODE
+      ? target.closest("[data-tooltip]")
+      : null;
+  const containsTarget = (trigger, target) =>
+    target?.nodeType != null && trigger.contains(target);
+  const getContent = (trigger) =>
+    trigger.getAttribute("data-tooltip")?.trim() ?? "";
+  const getPlacement = (trigger) => {
+    const placement = trigger.getAttribute("data-tooltip-placement");
+    return tooltipPlacements.has(placement) ? placement : "top";
+  };
+  const getTooltip = () => {
+    if (tooltip == null) {
+      tooltip = document.createElement("div");
+      tooltip.id = tooltipId;
+      tooltip.className = "tooltip";
+      tooltip.setAttribute("role", "tooltip");
+    }
+    return tooltip;
+  };
+  const setDescribedBy = (trigger, described) => {
+    const ids = new Set(
+      (trigger.getAttribute("aria-describedby") ?? "")
+        .split(/\s+/)
+        .filter(Boolean),
+    );
+    if (described) {
+      ids.add(tooltipId);
+    } else {
+      ids.delete(tooltipId);
+    }
+    if (ids.size === 0) {
+      trigger.removeAttribute("aria-describedby");
+    } else {
+      trigger.setAttribute("aria-describedby", [...ids].join(" "));
+    }
+  };
+  const clearOpenTimeout = () => {
+    if (openTimeout != null) {
+      window.clearTimeout(openTimeout);
+      openTimeout = null;
+    }
+    pendingTrigger = null;
+  };
+  const closeTooltip = (activateSkipDelay = true) => {
+    clearOpenTimeout();
+    pinnedByTouch = false;
+    positionRequest += 1;
+    autoUpdateCleanup?.();
+    autoUpdateCleanup = null;
+    if (activeTrigger == null) {
+      return;
+    }
+    setDescribedBy(activeTrigger, false);
+    activeTrigger = null;
+    tooltip?.remove();
+    if (activateSkipDelay) {
+      skipDelayUntil = Date.now() + skipDelay;
+    }
+  };
+  const updatePosition = (trigger, floating) => {
+    const request = ++positionRequest;
+    void computePosition(trigger, floating, {
+      middleware: [
+        offset(tooltipGap),
+        flip({ padding: tooltipGap }),
+        shift({ padding: tooltipGap }),
+        size({
+          padding: tooltipGap,
+          apply({ availableHeight, availableWidth, elements }) {
+            elements.floating.style.setProperty(
+              "--tooltip-available-width",
+              `${Math.max(0, availableWidth)}px`,
+            );
+            elements.floating.style.setProperty(
+              "--tooltip-available-height",
+              `${Math.max(0, availableHeight)}px`,
+            );
+          },
+        }),
+      ],
+      placement: getPlacement(trigger),
+      strategy: "fixed",
+    })
+      .then(({ x, y }) => {
+        if (activeTrigger !== trigger || request !== positionRequest) {
+          return;
+        }
+        const scale = window.devicePixelRatio || 1;
+        floating.style.transform = `translate(${Math.round(x * scale) / scale}px, ${Math.round(y * scale) / scale}px)`;
+        floating.style.visibility = "visible";
+      })
+      .catch(() => {
+        if (activeTrigger === trigger && request === positionRequest) {
+          closeTooltip(false);
+        }
+      });
+  };
+  const openTooltip = (trigger) => {
+    const content = getContent(trigger);
+    if (!trigger.isConnected || content.length === 0) {
+      return;
+    }
+    clearOpenTimeout();
+    if (activeTrigger === trigger) {
+      return;
+    }
+    closeTooltip();
+    const floating = getTooltip();
+    floating.textContent = content;
+    floating.style.visibility = "hidden";
+    floating.style.transform = "translate(0, 0)";
+    document.body.appendChild(floating);
+    activeTrigger = trigger;
+    setDescribedBy(trigger, true);
+    autoUpdateCleanup = autoUpdate(trigger, floating, () => {
+      updatePosition(trigger, floating);
+    });
+  };
+  const requestOpen = (trigger, immediate = false) => {
+    if (
+      getContent(trigger).length === 0 ||
+      activeTrigger === trigger ||
+      pendingTrigger === trigger
+    ) {
+      return;
+    }
+    clearOpenTimeout();
+    pendingTrigger = trigger;
+    const delay =
+      immediate || activeTrigger != null || Date.now() < skipDelayUntil
+        ? 0
+        : hoverDelay;
+    if (delay === 0) {
+      openTooltip(trigger);
+      return;
+    }
+    openTimeout = window.setTimeout(() => {
+      openTimeout = null;
+      pendingTrigger = null;
+      openTooltip(trigger);
+    }, delay);
+  };
+  const handlePointerOpen = (event) => {
+    if (event.pointerType === "touch") {
+      return;
+    }
+    const trigger = getTrigger(event.target);
+    if (trigger == null || containsTarget(trigger, event.relatedTarget)) {
+      return;
+    }
+    requestOpen(trigger);
+  };
+  const handlePointer = (event) => {
+    lastPointerWasTouch =
+      event.type === "pointerdown" && event.pointerType === "touch";
+  };
+  const handleTouchClick = (event) => {
+    const isTouch = event.pointerType === "touch" || lastPointerWasTouch;
+    lastPointerWasTouch = false;
+    if (!isTouch || event.detail === 0) {
+      return;
+    }
+    const trigger = getTrigger(event.target);
+    if (
+      trigger == null ||
+      !trigger.isConnected ||
+      getContent(trigger).length === 0 ||
+      (pinnedByTouch && activeTrigger === trigger)
+    ) {
+      if (pinnedByTouch) {
+        closeTooltip();
+      }
+      return;
+    }
+    openTooltip(trigger);
+    pinnedByTouch = activeTrigger === trigger;
+    window.setTimeout(() => {
+      if (activeTrigger === trigger && !trigger.isConnected) {
+        closeTooltip(false);
+      }
+    }, 0);
+  };
+  const handleLeave = (event) => {
+    if (pinnedByTouch) {
+      return;
+    }
+    const trigger = getTrigger(event.target);
+    if (trigger == null || containsTarget(trigger, event.relatedTarget)) {
+      return;
+    }
+    if (activeTrigger === trigger || pendingTrigger === trigger) {
+      closeTooltip();
+    }
+  };
+  const handleFocusIn = (event) => {
+    const trigger = getTrigger(event.target);
+    if (trigger?.matches(":focus-visible")) {
+      requestOpen(trigger, true);
+    }
+  };
+  const handleKeyDown = (event) => {
+    if (event.key === "Escape") {
+      closeTooltip();
+    }
+  };
+  const handleContextMenu = (event) => {
+    lastPointerWasTouch = false;
+    const trigger = getTrigger(event.target);
+    if (activeTrigger === trigger || pendingTrigger === trigger) {
+      closeTooltip();
+    }
+  };
+  const destroy = () => {
+    closeTooltip(false);
+    lastPointerWasTouch = false;
+    document.removeEventListener("pointerover", handlePointerOpen);
+    document.removeEventListener("pointerdown", handlePointer);
+    document.removeEventListener("pointercancel", handlePointer);
+    document.removeEventListener("click", handleTouchClick);
+    document.removeEventListener("pointerout", handleLeave);
+    document.removeEventListener("focusin", handleFocusIn);
+    document.removeEventListener("focusout", handleLeave);
+    document.removeEventListener("keydown", handleKeyDown);
+    document.removeEventListener("contextmenu", handleContextMenu);
+    tooltip = null;
+  };
+
+  document.addEventListener("pointerover", handlePointerOpen);
+  document.addEventListener("pointerdown", handlePointer);
+  document.addEventListener("pointercancel", handlePointer);
+  document.addEventListener("click", handleTouchClick);
+  document.addEventListener("pointerout", handleLeave);
+  document.addEventListener("focusin", handleFocusIn);
+  document.addEventListener("focusout", handleLeave);
+  document.addEventListener("keydown", handleKeyDown);
+  document.addEventListener("contextmenu", handleContextMenu);
+  window.addEventListener("pagehide", destroy, { once: true });
+})();
+</script>
+<script id="codex-visualization-tabs">
+(() => {
+  const selector = '.nav[role="tablist"] [role="tab"]';
+  const disabled = ':disabled,[aria-disabled="true"]';
+  const selectTab = (selected) => {
+    const panelId = selected.getAttribute("aria-controls");
+    for (const tab of selected.closest('[role="tablist"]').querySelectorAll('[role="tab"]')) {
+      const active = tab === selected;
+      tab.classList.toggle("active", active);
+      tab.setAttribute("aria-selected", String(active));
+      const id = tab.getAttribute("aria-controls");
+      const panel = id && document.getElementById(id);
+      if (panel != null) {
+        panel.hidden = id !== panelId;
+        if (!panel.hidden && selected.id) {
+          panel.setAttribute("aria-labelledby", selected.id);
+        }
+      }
+    }
+  };
+  const interact = (event) => {
+    const tab = event.target?.closest?.(selector);
+    if (event.defaultPrevented || tab == null || tab.matches(disabled)) {
+      return;
+    }
+    if (event.type === "click") {
+      selectTab(tab);
+      return;
+    }
+    const tabs = Array.from(
+      tab.closest('[role="tablist"]').querySelectorAll('[role="tab"]'),
+    ).filter((candidate) => !candidate.matches(disabled));
+    const current = tabs.indexOf(tab);
+    let next;
+    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+      next = (current + 1) % tabs.length;
+    } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+      next = (current + tabs.length - 1) % tabs.length;
+    } else if (event.key === "Home") {
+      next = 0;
+    } else if (event.key === "End") {
+      next = tabs.length - 1;
+    } else {
+      return;
+    }
+    event.preventDefault();
+    tabs[next].focus();
+    selectTab(tabs[next]);
+  };
+
+  for (const list of document.querySelectorAll('.nav[role="tablist"]')) {
+    const selected =
+      list.querySelector('[role="tab"][aria-selected="true"]') ??
+      list.querySelector('[role="tab"].active') ??
+      list.querySelector('[role="tab"]');
+    if (selected != null) {
+      selectTab(selected);
+    }
+  }
+  document.addEventListener("click", interact);
+  document.addEventListener("keydown", interact);
+  window.addEventListener("pagehide", () => {
+    document.removeEventListener("click", interact);
+    document.removeEventListener("keydown", interact);
+  }, { once: true });
+})();
+</script>
+<script id="codex-visualization-lucide" async src="https://unpkg.com/lucide@1.17.0/dist/umd/lucide.js"></script>
+<script>
+(() => {
+  const initialize = () => {
+    globalThis.lucide?.createIcons({ attrs: { width: 16, height: 16 } });
+  };
+  if (globalThis.lucide != null) {
+    initialize();
+    return;
+  }
+  document
+    .getElementById("codex-visualization-lucide")
+    ?.addEventListener("load", initialize, { once: true });
+})();
+</script>
+
+</body>
+</html>
